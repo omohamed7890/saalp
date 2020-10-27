@@ -1,0 +1,300 @@
+import subprocess 
+import wolframalpha 
+import pyttsx3 
+from tkinter import *
+import PIL.Image, PIL.ImageTk
+from PIL import Image
+import json 
+import random 
+import operator 
+import speech_recognition as sr 
+import datetime 
+import wikipedia 
+import webbrowser 
+import os 
+import smtplib 
+import ctypes 
+import time 
+import requests 
+import shutil 
+from bs4 import BeautifulSoup 
+import win32com.client as wincl 
+from urllib.request import urlopen 
+import sys
+import time
+import PyQt4
+
+
+
+
+
+numbers = {'hundred':100, 'thousand':1000, 'lakh':100000}
+engine = pyttsx3.init('sapi5') 
+voices = engine.getProperty('voices') 
+engine.setProperty('voice', voices[0].id) 
+
+
+window = Tk()
+
+global var
+global var1
+
+var = StringVar()
+var1 = StringVar()
+
+def speak(audio): 
+	engine.say(audio) 
+	engine.runAndWait() 
+
+def wishMe(): 
+	speak('What is your name')
+	name=takeCommand()
+	hour = int(datetime.datetime.now().hour) 
+	if hour>= 0 and hour<12: 
+		var.set("Good Morning!" + name) 
+		window.update()
+		speak("Good Morning!" + name) 
+
+	elif hour>= 12 and hour<18: 
+		var.set("Good Afternoon!" + name)
+		window.update()
+		speak("Good Afternoon!" + name)
+
+	else: 
+		 var.set("Good Evening!" + name)
+		 window.update()
+		 speak("Good Evening!" + name)
+	speak("Im Saako! How may I help you ")
+	
+def name():
+	assname =("Saako 1 point o") 
+	speak("I am your Assistant") 
+		
+
+def sendemail(to, content):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.ehlo()
+    server.starttls()
+    server.login('tt0682903@gmail.com', 'testing01') 
+    server.sendmail('email id', to, content)
+    server.close()
+
+def takeCommand(): 
+	
+	r = sr.Recognizer() 
+	
+	with sr.Microphone() as source:
+		var.set("Listening...")
+		window.update()
+		print("Listening...")
+		r.pause_threshold = 1
+		r.energy_threshold = 400
+		audio = r.listen(source)
+
+	try: 
+		var.set("Recognizing...")
+		window.update()
+		print("Recognizing")
+		query = r.recognize_google(audio, language='en-in')
+
+	except Exception as e: 
+		return "None"
+	var1.set(query)
+	window.update()
+	return query
+
+def clear():
+	clear = lambda: os.system('cls')
+
+def play():
+	
+	btn2['state'] = 'disabled'
+	btn0['state'] = 'disabled'
+	btn1.configure(bg = 'orange')
+
+	clear() 
+	wishMe() 
+	
+	
+	while True: 
+		btn1.configure(bg = 'orange')
+		query = takeCommand().lower() 
+		
+		
+		if 'wikipedia' in query: 
+			var.set('Searching Wikipedia...')
+			window.update()
+			speak('Searching Wikipedia...') 
+			query = query.replace("wikipedia", "") 
+			results = wikipedia.summary(query, sentences = 3) 
+			var.set('According to Wikipedia')
+			window.update()
+			speak("According to Wikipedia") 
+			var.set(results) 
+			window.update()
+			speak(results) 
+
+		elif 'weather' in query or 'what is the weather like today' in query or 'what is the weather' in query :
+			var.set('Whats the city name')
+			window.update()
+			speak('Whats the city name')
+			city=takeCommand()
+			Api_Key='6f723cedd99db2b727aabedbb19d3427'
+			final_URL= "http://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=imperial".format(city,Api_Key)
+			result = requests.get(final_URL)
+			data = result.json()
+			temprature = data['main']['temp']
+			var.set('The temperature is' +
+                    str(temprature) + ' °Fahrenheit')
+			window.update()
+			speak(' The temperature is ' +
+                  str(temprature) + ' °Fahrenheit')
+
+		elif 'open youtube' in query:
+			var.set('opening Youtube')
+			window.update()
+			speak('opening Youtube')
+			webbrowser.open("youtube.com") 
+
+		elif 'hello' in query:
+			var.set('Hello Sir')
+			window.update()
+			speak("Hello Sir")
+
+		elif 'what is the time' in query:
+			strtime = datetime.datetime.now().strftime("%H:%M:%S")
+			var.set("Sir the time is %s" % strtime)
+			window.update()
+			speak("Sir the time is %s" %strtime)
+
+
+		elif 'what is the date' in query:
+			strdate = datetime.datetime.today().strftime("%d %m %y")
+			var.set("Sir today's date is %s" %strdate)
+			window.update()
+			speak("Sir today's date is %s" %strdate) 
+
+		elif 'saako' in query:
+			var.set('Im Saako and in your service')
+			window.update()
+			speak('Im Saako and in  your service')
+
+		elif 'thank you' in query:
+			var.set("Welcome Sir")
+			window.update()
+			speak("Welcome Sir")
+
+		elif 'how old are you' in query:
+			var.set("I am a little baby sir")
+			window.update()
+			speak("I am a little baby sir")
+
+		elif 'say hello' in query:
+			var.set('Hello Everyone! Im Saako')
+			window.update()
+			speak('Hello Everyone! Im Saako')
+
+		elif 'open chrome' in query:
+			var.set('Opening Google Chrome')
+			window.update()
+			speak('Opening Google Chrome')
+			path = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+			os.startfile(path)
+
+		elif 'play' in query:   
+			query = query.replace("play", "")           
+			webbrowser.open(query)  
+
+		elif 'who i am' in query: 
+			speak("If you talk then definately your human." + name)
+
+		elif 'how are you' in query: 
+			speak("I am fine, Thank you") 
+			speak("How are you, Sir") 
+
+		elif 'fine' in query or "good" in query or 'i am fine' in query: 
+			speak("It's good to know that your fine") 
+
+		elif 'exit' in query: 
+			speak("Thanks for giving me your time") 
+			exit()
+
+		elif 'lock window' in query: 
+			speak("locking the device") 
+			ctypes.windll.user32.LockWorkStation() 
+
+		elif 'shutdown system' in query: 
+			speak("Hold On a Sec ! Your system is on its way to shut down") 
+			subprocess.call('shutdown / p /f') 
+
+		elif 'write a note' in query: 
+			var.set('What should i write, sir')
+			window.update()
+			speak("What should i write, sir") 
+			note = takeCommand() 
+			file = open('saako.txt', 'w') 
+			speak("Sir, Should i include date and time") 
+			snfm = takeCommand() 
+			if 'yes' in snfm or 'sure' in snfm: 
+				strTime = datetime.datetime.now().strftime("% H:% M:% S") 
+				file.write(strTime) 
+				file.write(" :- ") 
+				file.write(note) 
+			else: 
+				file.write(note) 
+		elif 'show note' in query: 
+			var.set('Showing Notes')
+			window.update()
+			speak("Showing Notes") 
+			file = open("saako.txt", "r")  
+			var.set(file.read()) 
+			window.update
+			speak(file.read(6)) 
+
+def update(ind):
+    frame = frames[(ind)%100]
+    ind += 1
+    label.configure(image=frame)
+    window.after(100, update, ind)
+
+def resource_path(relative_path):
+	try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+		base_path = sys._MEIPASS
+	except Exception:
+		base_path = os.path.abspath(".")
+
+	return os.path.join(base_path, relative_path)
+
+assistant = resource_path("assistant.gif")
+
+label2 = Label(window, textvariable = var1, bg = '#FAB60C')
+label2.config(font=("Courier", 20))
+var1.set('You Said:')
+label2.pack()
+
+label1 = Label(window, textvariable = var, bg = '#ADD8E6')
+label1.config(font=("Courier", 20))
+var.set('Welcome')
+label1.pack()
+
+frames = [PhotoImage(file='Assistant.gif',format = 'gif -index %i' %(i)) for i in range(100)]
+window.title('Saako')
+
+label = Label(window, width = 500, height = 500)
+label.pack()
+window.after(0, update, 0)
+
+btn0 = Button(text = 'Greeting',width = 20, command = wishMe, bg = '#5C85FB')
+btn0.config(font=("Courier", 12))
+btn0.pack()
+btn1 = Button(text = 'Start Saako',width = 20,command = play, bg = '#5C85FB')
+btn1.config(font=("Courier", 12))
+btn1.pack()
+btn2 = Button(text = 'Bye',width = 20, command = window.destroy, bg = '#5C85FB')
+btn2.config(font=("Courier", 12))
+btn2.pack()
+
+
+window.mainloop()
+
